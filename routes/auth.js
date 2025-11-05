@@ -55,19 +55,11 @@ router.post('/register', async (req, res) => {
 
 // ---------------------------
 // Login user (email or username)
-// ---------------------------
 router.post('/login', async (req, res) => {
   try {
-    const { identifier, password } = req.body; // identifier = username or email
+    const { identifier, password } = req.body;
+    console.log('Login attempt received:', identifier);
 
-    // --- DEBUG LOG ---
-    console.log('Login attempt:', identifier);
-
-    if (!identifier || !password) {
-      return res.status(400).json({ message: 'Username/email and password are required' });
-    }
-
-    // Find user by email or username
     const user = await User.findOne({
       $or: [
         { email: identifier.toLowerCase() },
@@ -75,28 +67,19 @@ router.post('/login', async (req, res) => {
       ]
     });
 
-    // --- DEBUG LOG ---
-    console.log('User found in DB:', user ? user.username : 'No user found');
-
     if (!user) {
+      console.log('User not found:', identifier);
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Compare password
     const isMatch = await user.comparePassword(password);
-
-    // --- DEBUG LOG ---
-    console.log('Password match:', isMatch);
-
     if (!isMatch) {
+      console.log('Password mismatch for user:', identifier);
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    const token = jwt.sign(
-      { userId: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRY }
-    );
+    console.log('Login success for user:', identifier);
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRY });
 
     res.json({
       message: 'Login successful',
@@ -114,6 +97,7 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
 
 
 // ---------------------------
