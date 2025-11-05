@@ -6,7 +6,11 @@ const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 
-
+router.get('/test-log', (req, res) => {
+  console.log('🔥 Backend test log reached!');
+  process.stdout.write('🔥 Backend test log 2\n');
+  res.send('Check Render logs!');
+});
 
 // ---------------------------
 // Register new user
