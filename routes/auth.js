@@ -58,7 +58,10 @@ router.post('/register', async (req, res) => {
 // ---------------------------
 router.post('/login', async (req, res) => {
   try {
-    const { identifier, password } = req.body; // identifier can be username or email
+    const { identifier, password } = req.body; // identifier = username or email
+
+    // --- DEBUG LOG ---
+    console.log('Login attempt:', identifier);
 
     if (!identifier || !password) {
       return res.status(400).json({ message: 'Username/email and password are required' });
@@ -72,12 +75,19 @@ router.post('/login', async (req, res) => {
       ]
     });
 
+    // --- DEBUG LOG ---
+    console.log('User found in DB:', user ? user.username : 'No user found');
+
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
     // Compare password
     const isMatch = await user.comparePassword(password);
+
+    // --- DEBUG LOG ---
+    console.log('Password match:', isMatch);
+
     if (!isMatch) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
@@ -104,6 +114,7 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
 
 // ---------------------------
 // Request password reset
