@@ -6,6 +6,8 @@ const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 
+
+
 // ---------------------------
 // Register new user
 // ---------------------------
@@ -53,8 +55,9 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// ---------------------------
+/// ---------------------------
 // Login user (email or username)
+// ---------------------------
 router.post('/login', async (req, res) => {
   try {
     const { identifier, password } = req.body;
