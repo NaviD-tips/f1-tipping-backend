@@ -11,13 +11,39 @@ dotenv.config();
 // Create Express app
 const app = express();
 
-// CORS configuration - this must come before mounting any routes
+// ===========================
+// CORS Configuration
+// ===========================
+const allowedOrigins = [
+  'https://f1predictor.club',
+  'https://thunderous-muffin-0ec09a.netlify.app',
+  'http://localhost:3000'
+];
+
+// Use CORS middleware for all routes
 app.use(cors({
-  origin: ['https://f1predictor.club', 'https://thunderous-muffin-0ec09a.netlify.app', 'http://localhost:3000'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization']
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }));
+
+// Explicitly handle preflight OPTIONS requests
+app.options('*', cors({
+  origin: allowedOrigins,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
+
 
 // Other middleware
 app.use(express.json());
