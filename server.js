@@ -256,6 +256,20 @@ if (fs.existsSync(path.join(routesPath, 'chat.js'))) {
   console.warn('Chat routes file not found');
 }
 
+//add hikiing routes
+if (fs.existsSync(path.join(routesPath, 'hikes.js'))) {
+  const hikeRoutes = require('./routes/hikes');
+  if (isValidRouter(hikeRoutes)) {
+    app.use('/api/hikes', hikeRoutes);
+    console.log('Hike routes mounted successfully');
+  } else {
+    console.error('Hike routes module is not a valid Express router');
+  }
+} else {
+  console.warn('Hike routes file not found');
+}
+
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Express error handler:', err);
